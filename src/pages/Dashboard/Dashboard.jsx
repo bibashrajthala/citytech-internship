@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Space } from "antd";
+import { Col, Row } from "antd";
+
+import { Select } from "antd";
 
 import axios from "axios";
 import Table1 from "../../components/Table1/Table1";
 import Table2 from "../../components/Table2/Table2";
 import { useNavigate } from "react-router-dom";
-import TreeSelectCountry from "../../components/TreeSelectCountry/TreeSelectCountry";
 
+const { Option } = Select;
 // const API = axios.create({ baseURL: "http://localhost:5000" });
 const API = axios.create({
   baseURL: "https://jp-dev.cityremit.global",
@@ -80,10 +82,10 @@ const Dashboard = () => {
 
     const fetchCountries = async () => {
       const response = await API.get(
-        "/web-api/transaction-manager/v1/admin/agents/charts",
+        "/web-api/config/v1/admin/masters/country",
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log(response);
+      // console.log(response);
       const data = await response.data.data;
       setCountries(data);
     };
@@ -97,7 +99,15 @@ const Dashboard = () => {
   // console.log(summary);
   // console.log(table1Data);
   // console.log(table2Data);
-  console.log(countries);
+  // console.log(countries);
+
+  const onChange = (value) => {
+    console.log(`selected ${value}`);
+  };
+
+  const onSearch = (value) => {
+    console.log("search:", value);
+  };
 
   return (
     <div>
@@ -190,8 +200,21 @@ const Dashboard = () => {
         </Row>
       </>
 
-      <div>
-        <TreeSelectCountry />
+      <div style={{ height: "20rem" }}>
+        <Select
+          showSearch
+          placeholder="Select a person"
+          optionFilterProp="children"
+          onChange={onChange}
+          onSearch={onSearch}
+          filterOption={(input, option) =>
+            option.children.toLowerCase().includes(input.toLowerCase())
+          }
+        >
+          {countries.map((country) => (
+            <Option value={country.label}>{country.label}</Option>
+          ))}
+        </Select>
       </div>
     </div>
   );
