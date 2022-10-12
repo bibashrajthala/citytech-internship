@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // import { ReactComponent as Logo } from "../../assets/svgs/siderLogo.svg";
 
@@ -10,18 +10,26 @@ import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+
+  const [errorMessage, setErrorMessage] = useState("");
+
   const onFinish = async (formData) => {
-    console.log("user form data:", formData);
+    try {
+      console.log("user form data:", formData);
 
-    const response = await axios.post(
-      "https://jp-dev.cityremit.global/web-api//config/v1/auths/login",
-      formData
-    );
-    // console.log(response.data.data[0].jwt_token);
+      const response = await axios.post(
+        "https://jp-dev.cityremit.global/web-api//config/v1/auths/login",
+        formData
+      );
+      // console.log(response.data.data[0].jwt_token);
 
-    localStorage.setItem("accessToken", response.data.data[0].jwt_token);
+      localStorage.setItem("accessToken", response.data.data[0].jwt_token);
 
-    navigate("/dashboard");
+      navigate("/dashboard");
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage("Authentication Failed");
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -56,6 +64,20 @@ const LoginForm = () => {
           width: "25rem",
         }}
       >
+        {errorMessage && (
+          <div
+            style={{
+              width: "100%",
+              height: "20px",
+              color: "red",
+              backgroundColor: "#f06957",
+              marginBottom: "10px",
+            }}
+          >
+            {errorMessage}
+          </div>
+        )}
+
         <div style={{ marginBottom: "10px" }}>
           <img
             src="https://jp-dev.cityremit.global/static/media/city-express-logo.f913d3a8.png"

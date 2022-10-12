@@ -211,8 +211,10 @@ const Dashboard = () => {
             option.children.toLowerCase().includes(input.toLowerCase())
           }
         >
-          {countries.map((country) => (
-            <Option value={country.label}>{country.label}</Option>
+          {countries.map((country, index) => (
+            <Option key={index} value={country.label}>
+              {country.label}
+            </Option>
           ))}
         </Select>
       </div>
