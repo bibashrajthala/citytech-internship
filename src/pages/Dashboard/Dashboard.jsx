@@ -8,7 +8,7 @@ import Table1 from "../../components/Table1/Table1";
 import Table2 from "../../components/Table2/Table2";
 import { useNavigate } from "react-router-dom";
 
-const { Option } = Select;
+// const { Option } = Select;
 // const API = axios.create({ baseURL: "http://localhost:5000" });
 const API = axios.create({
   baseURL: "https://jp-dev.cityremit.global",
@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [table1Data, setTable1Data] = useState(null);
   const [table2Data, setTable2Data] = useState(null);
   const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState("");
 
   let token = localStorage.getItem("accessToken");
   // console.log(token);
@@ -35,7 +36,7 @@ const Dashboard = () => {
     // for providing token to server's  middleware for verification from the localStorage as the header's authorization
     // console.log("effect", token);
 
-    if (!token) navigate("/");
+    if (!token) navigate("/auth");
 
     const fetchSummary = async () => {
       const response = await API.get(
@@ -69,7 +70,7 @@ const Dashboard = () => {
         setTable2Data(data);
       } catch (error) {
         console.log("error", error);
-        navigate("/");
+        navigate("/auth");
       }
       // const response = await API.post(
       //   "/web-api/config/v1/tickets/search",
@@ -107,6 +108,10 @@ const Dashboard = () => {
 
   const onSearch = (value) => {
     console.log("search:", value);
+  };
+
+  const handleSelectCountry = (value) => {
+    setSelectedCountry(value);
   };
 
   return (
@@ -210,13 +215,16 @@ const Dashboard = () => {
           filterOption={(input, option) =>
             option.children.toLowerCase().includes(input.toLowerCase())
           }
+          options={countries}
+          onSelect={handleSelectCountry}
         >
-          {countries.map((country, index) => (
+          {/* {countries.map((country, index) => (
             <Option key={index} value={country.label}>
               {country.label}
             </Option>
-          ))}
+          ))} */}
         </Select>
+        {selectedCountry && <p>{selectedCountry}</p>}
       </div>
     </div>
   );

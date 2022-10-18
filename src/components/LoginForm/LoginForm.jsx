@@ -5,11 +5,13 @@ import React, { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useDispatch } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -25,7 +27,7 @@ const LoginForm = () => {
 
       localStorage.setItem("accessToken", response.data.data[0].jwt_token);
 
-      navigate("/dashboard");
+      navigate("/");
       setErrorMessage("");
     } catch (error) {
       setErrorMessage("Authentication Failed");
@@ -56,7 +58,7 @@ const LoginForm = () => {
         // wrapperCol={{ span: 16 }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
-        autoComplete="off"
+        autoComplete="on"
         style={{
           backgroundColor: "#fff",
           padding: "1rem",
@@ -68,10 +70,10 @@ const LoginForm = () => {
           <div
             style={{
               width: "100%",
-              height: "20px",
-              color: "red",
+              color: "white",
               backgroundColor: "#f06957",
               marginBottom: "10px",
+              padding: "5px 0",
             }}
           >
             {errorMessage}
