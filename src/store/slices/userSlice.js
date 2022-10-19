@@ -1,8 +1,8 @@
-import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-  users: {},
+  userData: {},
   status: "idle", // idle or pending or succeeded or failed
   error: null,
 };
@@ -15,7 +15,9 @@ export const loginUser = createAsyncThunk(
   async (formData) => {
     try {
       const response = await axios.post(LOGIN_URL, formData);
-      console.log(response);
+      //   console.log(response);
+      //   console.log(response.data.data[0].jwt_token);
+      localStorage.setItem("accessToken", response.data.data[0].jwt_token);
       return response.data;
     } catch (error) {
       return error.message;
@@ -23,7 +25,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-export const usersSlice = createSlice({
+export const dashboardSlice = createSlice({
   name: "users",
   initialState,
   extraReducers: (builder) => {
@@ -33,7 +35,7 @@ export const usersSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload;
+        state.userData = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
@@ -42,11 +44,12 @@ export const usersSlice = createSlice({
   },
 });
 
-export const selectUser = (state) => state.users.users;
-// export const selectUserToken = state=>state.users.users;
-export const selectPostStatus = (state) => state.posts.status;
-export const selectPostError = (state) => state.posts.error;
+export const selectUser = (state) => state.user.userData;
+// export const selectUserToken = (state) =>
+//   state.user.userData?.data[0].data.jwt_token;
+export const selectUserStatus = (state) => state.user.status;
+export const selectUserError = (state) => state.user.error;
 
 // export const { addPost, addReactionCount } = postsSlice.actions;
 
-export default usersSlice.reducer;
+export default dashboardSlice.reducer;

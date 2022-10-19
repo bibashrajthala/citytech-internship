@@ -5,13 +5,16 @@ import React, { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
+import { loginUser, selectUserError } from "../../store/slices/userSlice";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // const err = useSelector(selectUserError)
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,13 +22,7 @@ const LoginForm = () => {
     try {
       console.log("user form data:", formData);
 
-      const response = await axios.post(
-        "https://jp-dev.cityremit.global/web-api//config/v1/auths/login",
-        formData
-      );
-      // console.log(response.data.data[0].jwt_token);
-
-      localStorage.setItem("accessToken", response.data.data[0].jwt_token);
+      dispatch(loginUser(formData));
 
       navigate("/");
       setErrorMessage("");

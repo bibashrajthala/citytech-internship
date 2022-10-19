@@ -3,99 +3,48 @@ import { Col, Row } from "antd";
 
 import { Select } from "antd";
 
-import axios from "axios";
 import Table1 from "../../components/Table1/Table1";
 import Table2 from "../../components/Table2/Table2";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchCountries,
+  fetchSummary,
+  fetchTable1,
+  fetchTable2,
+  selectCountries,
+  selectSummary,
+  selectTable1,
+  selectTable2,
+} from "../../store/slices/dashboardSlice";
 
 // const { Option } = Select;
-// const API = axios.create({ baseURL: "http://localhost:5000" });
-const API = axios.create({
-  baseURL: "https://jp-dev.cityremit.global",
-});
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [summary, setSummary] = useState(null);
-  const [table1Data, setTable1Data] = useState(null);
-  const [table2Data, setTable2Data] = useState(null);
-  const [countries, setCountries] = useState([]);
+  const dispatch = useDispatch();
+  const summary = useSelector(selectSummary);
+  const table1Data = useSelector(selectTable1);
+  const table2Data = useSelector(selectTable2);
+  const countries = useSelector(selectCountries);
   const [selectedCountry, setSelectedCountry] = useState("");
+  // console.log(summary);
+  // console.log(table1Data);
+  // console.log(table2Data);
+  // console.log(countries);
 
   let token = localStorage.getItem("accessToken");
   // console.log(token);
-  // API.interceptors.request.use((req) => {
-  //   if (token) {
-  //     console.log(token);
 
-  //     req.headers.Authorization = `Bearer ${token}`;
-  //   }
-  //   return req;
-  // });
   useEffect(() => {
-    // for providing token to server's  middleware for verification from the localStorage as the header's authorization
-    // console.log("effect", token);
-
     if (!token) navigate("/auth");
 
-    const fetchSummary = async () => {
-      const response = await API.get(
-        "/web-api/transaction-manager/v1/admin/dashboard/summary",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const data = await response.data.data[0];
-      setSummary(data);
-    };
-
-    const fetchTable1Data = async () => {
-      const response = await API.post(
-        "/web-api/transaction-manager/v1/admin/dashboard/search",
-        null,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // console.log(response);
-      const data = await response.data.data;
-      setTable1Data(data);
-    };
-
-    const fetchTable2Data = async () => {
-      try {
-        const response = await API.post(
-          "/web-api/config/v1/tickets/search",
-          null,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        // console.log(response);
-        const data = await response.data.data.data;
-        setTable2Data(data);
-      } catch (error) {
-        console.log("error", error);
-        navigate("/auth");
-      }
-      // const response = await API.post(
-      //   "/web-api/config/v1/tickets/search",
-      //   null
-      // );
-      // // console.log(response);
-      // const data = await response.data.data.data;
-      // setTable2Data(data);
-    };
-
-    const fetchCountries = async () => {
-      const response = await API.get(
-        "/web-api/config/v1/admin/masters/country",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // console.log(response);
-      const data = await response.data.data;
-      setCountries(data);
-    };
-
-    fetchSummary();
-    fetchTable1Data();
-    fetchTable2Data();
-    fetchCountries();
-  }, [token, navigate]);
+    dispatch(fetchSummary());
+    dispatch(fetchTable1());
+    dispatch(fetchTable2());
+    dispatch(fetchCountries());
+  }, [token]);
 
   // console.log(summary);
   // console.log(table1Data);
